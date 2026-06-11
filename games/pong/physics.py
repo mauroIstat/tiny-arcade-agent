@@ -1,10 +1,15 @@
 import random
+from enum import Enum
 
-import pygame
+from .actions import Action
+from .config import GameConfig
+from .entities import Ball, GameState, Paddle
+from .geometry import make_ball_rect, make_paddle_rect
 
-from games.pong.actions import Action
-from games.pong.config import GameConfig
-from games.pong.entities import Ball, GameState, Paddle
+
+class Direction(Enum):
+    LEFT = -1
+    RIGHT = 1
 
 
 def random_ball_vx(config: GameConfig) -> float:
@@ -18,10 +23,10 @@ def random_ball_vy(config: GameConfig) -> float:
     )
 
 
-def reset_ball(ball: Ball, config: GameConfig) -> None:
+def reset_ball(ball: Ball, config: GameConfig, direction: Direction) -> None:
     ball.x = config.width / 2 - ball.size / 2
     ball.y = config.height / 2 - ball.size / 2
-    ball.vx = random_ball_vx(config)
+    ball.vx = direction.value * config.ball_speed_x
     ball.vy = random_ball_vy(config)
 
 
@@ -47,24 +52,6 @@ def handle_wall_collisions(ball: Ball, config: GameConfig) -> None:
     if ball.y + ball.size >= config.height:
         ball.y = config.height - ball.size
         ball.vy *= -1
-
-
-def make_paddle_rect(paddle: Paddle) -> pygame.Rect:
-    return pygame.Rect(
-        int(paddle.x),
-        int(paddle.y),
-        paddle.width,
-        paddle.height,
-    )
-
-
-def make_ball_rect(ball: Ball) -> pygame.Rect:
-    return pygame.Rect(
-        int(ball.x),
-        int(ball.y),
-        ball.size,
-        ball.size,
-    )
 
 
 def handle_paddle_collisions(state: GameState) -> None:

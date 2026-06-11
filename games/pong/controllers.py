@@ -1,8 +1,8 @@
 import random
 
 from .actions import Action
-from .entities import GameState
 from .config import GameConfig
+from .entities import GameState
 
 
 def do_nothing(state: GameState, config: GameConfig) -> Action:
@@ -90,14 +90,15 @@ def sleepy_follow_ball(state: GameState, config: GameConfig) -> Action:
     ball = state.ball
     opponent = state.opponent
 
-    # useremo attributi "statici" della funzione
+    # This controller is stateful: it remembers its frame counter and previous
+    # action between calls, so it reacts only once every reaction interval.
     if not hasattr(sleepy_follow_ball, "counter"):
         sleepy_follow_ball.counter = 0
         sleepy_follow_ball.current_action = Action.STAY
 
     sleepy_follow_ball.counter += 1
 
-    reaction_interval = 20  # più alto = più facile da battere
+    reaction_interval = 20  # Higher values make the opponent easier to beat.
 
     if sleepy_follow_ball.counter >= reaction_interval:
         sleepy_follow_ball.counter = 0
@@ -111,6 +112,7 @@ def sleepy_follow_ball(state: GameState, config: GameConfig) -> Action:
 
     return sleepy_follow_ball.current_action
 
+
 def defensive_follow_ball(state: GameState, config: GameConfig) -> Action:
     """
     Opponent follows the ball only when the ball is moving toward it.
@@ -122,7 +124,7 @@ def defensive_follow_ball(state: GameState, config: GameConfig) -> Action:
     center_y = config.height / 2
     tolerance = 20
 
-    # Ball moving toward opponent on the right
+    # Ball moving toward opponent on the right.
     if ball.vx > 0:
         if ball.center_y < opponent.center_y - tolerance:
             return Action.UP
@@ -130,7 +132,7 @@ def defensive_follow_ball(state: GameState, config: GameConfig) -> Action:
             return Action.DOWN
         return Action.STAY
 
-    # Ball moving away: return to center
+    # Ball moving away: return to center.
     if opponent.center_y < center_y - tolerance:
         return Action.DOWN
     if opponent.center_y > center_y + tolerance:
@@ -146,7 +148,7 @@ def very_lazy_follow_ball(state: GameState, config: GameConfig) -> Action:
     ball = state.ball
     opponent = state.opponent
 
-    tolerance = 60  # più alto = più pigro = più facile
+    tolerance = 60  # Higher values make the opponent lazier and easier.
 
     if ball.center_y < opponent.center_y - tolerance:
         return Action.UP
@@ -161,7 +163,7 @@ def noisy_follow_ball(state: GameState, config: GameConfig) -> Action:
     """
     Opponent follows the ball, but sometimes makes mistakes.
     """
-    mistake_probability = 0.20  # 20% di errori
+    mistake_probability = 0.20  # 20% chance of making a mistake.
 
     if random.random() < mistake_probability:
         return random.choice([Action.UP, Action.DOWN, Action.STAY])

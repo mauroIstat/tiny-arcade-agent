@@ -1,4 +1,3 @@
-import random
 import sys
 from collections.abc import Callable
 
@@ -9,6 +8,7 @@ from .config import GameConfig
 from .entities import Ball, GameState, Paddle, Score
 
 from .physics import (
+    Direction,
     handle_paddle_collisions,
     handle_wall_collisions,
     move_ball,
@@ -22,13 +22,6 @@ from .geometry import make_ball_rect, make_paddle_rect
 
 
 OpponentStrategy = Callable[[GameState, GameConfig], Action]
-
-
-def reset_ball(ball: Ball, config: GameConfig) -> None:
-    ball.x = config.width / 2 - ball.size / 2
-    ball.y = config.height / 2 - ball.size / 2
-    ball.vx = random_ball_vx(config)
-    ball.vy = random_ball_vy(config)
 
 
 def create_initial_state(config: GameConfig) -> GameState:
@@ -53,7 +46,7 @@ def create_initial_state(config: GameConfig) -> GameState:
         y=config.height / 2 - config.ball_size / 2,
         size=config.ball_size,
         vx=random_ball_vx(config),
-        vy=random_ball_vy(config)
+        vy=random_ball_vy(config),
     )
 
     score = Score()
@@ -72,12 +65,12 @@ def handle_score(state: GameState, config: GameConfig) -> None:
     # Ball exits from the left side: point for opponent.
     if ball.x + ball.size < 0:
         state.score.opponent += 1
-        reset_ball(ball, config)
+        reset_ball(ball, config, Direction.RIGHT)
 
     # Ball exits from the right side: point for player.
     if ball.x > config.width:
         state.score.player += 1
-        reset_ball(ball, config)
+        reset_ball(ball, config, Direction.LEFT)
 
 
 def get_player_action() -> Action:
@@ -125,6 +118,7 @@ def draw_game(
     screen.blit(score_text, score_rect)
 
     pygame.display.flip()
+
 
 def draw_game_over(
     screen: pygame.Surface,
@@ -190,6 +184,7 @@ def wait_for_restart() -> bool:
 
                 if event.key == pygame.K_SPACE:
                     return True
+
 
 def run_game(
     opponent_strategy: OpponentStrategy,

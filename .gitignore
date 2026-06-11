@@ -1,2 +1,4 @@
 .venv/
-games/pong/__pycache__/
+
+__pycache__/
+*.pyc
