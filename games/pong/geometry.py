@@ -1,6 +1,6 @@
 import pygame
 
-from games.pong.entities import Ball, Paddle
+from .entities import Ball, Paddle
 
 
 def make_paddle_rect(paddle: Paddle) -> pygame.Rect:
