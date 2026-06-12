@@ -59,12 +59,14 @@ def parse_args():
 def main():
     args = parse_args()
 
+    # retrieve arguments
     opponent_strategy = OPPONENTS[args.opponent]
     opponent_speed_level = SPEEDS[args.speed]
+    max_score=args.max_score,
 
     config = GameConfig(
         opponent_speed_level=opponent_speed_level,
-        max_score=args.max_score,
+        max_score=max_score,
     )
 
     title = (
