@@ -1,7 +1,7 @@
 import random
 
 from .actions import Action
-from .config import GameConfig
+from ..config import GameConfig
 from .entities import GameState
 
 

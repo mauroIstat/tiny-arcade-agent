@@ -35,6 +35,28 @@ Controls:
 - Space: restart after the match ends.
 - Esc: quit from the game-over screen.
 
+## The game loop
+
+Pong does not wait for one big event to happen. Instead, it runs the same small
+cycle again and again, one frame at a time.
+
+On each frame, the game:
+
+- reads the keyboard input;
+- moves the player paddle;
+- asks the opponent controller what to do;
+- moves the opponent paddle and the ball;
+- checks for wall and paddle collisions;
+- updates the score if the ball leaves the screen;
+- draws the new state on the screen.
+
+Then the next frame starts and the cycle repeats.
+
+The `fps` value in `config.py` means frames per second. With `fps = 60`, the game
+tries to run this cycle about 60 times every second. A higher value means the
+screen can update more often. A lower value makes each update easier to notice,
+which can be useful when studying how the game works.
+
 ## Opponent controllers
 
 The opponent is controlled by a function that receives the current game state
@@ -93,13 +115,13 @@ python play.py --max-score 3
 
 ## Code map
 
-- `actions.py`: the possible actions for a paddle.
 - `config.py`: game settings such as screen size, speeds, and max score.
-- `entities.py`: the data objects used by the game.
-- `geometry.py`: helpers that create pygame rectangles.
-- `physics.py`: movement and collision rules.
-- `controllers.py`: opponent algorithms.
 - `game.py`: setup, drawing, input, scoring, and the main loop.
+- `core/actions.py`: the possible actions for a paddle.
+- `core/controllers.py`: opponent algorithms.
+- `core/entities.py`: the data objects used by the game.
+- `core/geometry.py`: helpers that create pygame rectangles.
+- `core/physics.py`: movement and collision rules.
 
 ## Classroom activities
 

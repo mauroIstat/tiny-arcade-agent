@@ -2,10 +2,10 @@ import argparse
 
 from games.pong.config import GameConfig, OpponentSpeed
 from games.pong.game import run_game
-from games.pong import controllers
+from games.pong.core import controllers
 
 
-OPPONENTS = {
+OPPONENT_STRATEGIES = {
     "random": controllers.rand,
     "very-lazy": controllers.very_lazy_follow_ball,
     "lazy": controllers.lazy_follow_ball,
@@ -18,7 +18,7 @@ OPPONENTS = {
 }
 
 
-SPEEDS = {
+OPPONENT_SPEEDS = {
     "very-slow": OpponentSpeed.VERY_SLOW,
     "slow": OpponentSpeed.SLOW,
     "medium": OpponentSpeed.MEDIUM,
@@ -34,14 +34,14 @@ def parse_args():
 
     parser.add_argument(
         "--opponent",
-        choices=OPPONENTS.keys(),
+        choices=OPPONENT_STRATEGIES.keys(),
         default="very-lazy",
         help="Choose the Pong opponent strategy.",
     )
 
     parser.add_argument(
         "--speed",
-        choices=SPEEDS.keys(),
+        choices=OPPONENT_SPEEDS.keys(),
         default="medium",
         help="Choose the Pong opponent speed.",
     )
@@ -59,14 +59,12 @@ def parse_args():
 def main():
     args = parse_args()
 
-    # retrieve arguments
-    opponent_strategy = OPPONENTS[args.opponent]
-    opponent_speed_level = SPEEDS[args.speed]
-    max_score=args.max_score,
+    opponent_strategy = OPPONENT_STRATEGIES[args.opponent]
+    opponent_speed_level = OPPONENT_SPEEDS[args.speed]
 
     config = GameConfig(
         opponent_speed_level=opponent_speed_level,
-        max_score=max_score,
+        max_score=args.max_score,
     )
 
     title = (

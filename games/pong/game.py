@@ -3,11 +3,11 @@ from collections.abc import Callable
 
 import pygame
 
-from .actions import Action
 from .config import GameConfig
-from .entities import Ball, GameState, Paddle, Score
+from .core.actions import Action
+from .core.entities import Ball, GameState, Paddle, Score
 
-from .physics import (
+from .core.physics import (
     Direction,
     handle_paddle_collisions,
     handle_wall_collisions,
@@ -18,7 +18,7 @@ from .physics import (
     reset_ball,
 )
 
-from .geometry import make_ball_rect, make_paddle_rect
+from .core.geometry import make_ball_rect, make_paddle_rect
 
 
 OpponentStrategy = Callable[[GameState, GameConfig], Action]

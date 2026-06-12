@@ -2,7 +2,7 @@ import random
 from enum import Enum
 
 from .actions import Action
-from .config import GameConfig
+from ..config import GameConfig
 from .entities import Ball, GameState, Paddle
 from .geometry import make_ball_rect, make_paddle_rect
 

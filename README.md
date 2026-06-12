@@ -38,15 +38,18 @@ tiny-arcade-agent/
 +-- README.md
 ```
 
-Pong is split into small files, each with a clear responsibility:
+Pong keeps the two main teaching files at the top of `games/pong/`:
+
+- `config.py`: game parameters such as window size, speed, and max score.
+- `game.py`: the main game loop.
+
+The internal building blocks live in `games/pong/core/`:
 
 - `actions.py`: possible actions: up, down, stay.
-- `config.py`: game parameters such as window size, speed, and max score.
+- `controllers.py`: algorithms used by the virtual opponent.
 - `entities.py`: main game objects: paddle, ball, score, and game state.
 - `geometry.py`: conversion from game objects to pygame rectangles.
 - `physics.py`: movement, collisions, bounces, and ball reset logic.
-- `controllers.py`: algorithms used by the virtual opponent.
-- `game.py`: the main game loop.
 
 ## Windows setup, recommended
 
