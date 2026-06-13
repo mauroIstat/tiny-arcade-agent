@@ -20,7 +20,7 @@ from .core.physics import (
 
 from .core.geometry import make_ball_rect, make_paddle_rect
 
-from .core.controllers import keyboard
+from .core.policies import keyboard_policy as player_policy
 
 Controller = Callable[[GameState, GameConfig], Action]
 
@@ -174,7 +174,7 @@ def wait_for_restart() -> bool:
 
 
 def run_game(
-    opponent_controller: Controller,
+    opponent_policy,
     title: str = "Tiny Pong Agents",
     config: GameConfig | None = None,
 ) -> None:
@@ -199,12 +199,13 @@ def run_game(
                 pygame.quit()
                 sys.exit()
 
-        player_action = keyboard(state, config)
-        opponent_action = opponent_controller(state, config)
+        # Ask each policy what action it wants to perform
+        player_action = player_policy(state, config)
+        opponent_action = opponent_policy(state, config)
 
+        # Apply the chosen actions to the paddles
         move_paddle(state.player, player_action, config, dt)
         move_paddle(state.opponent, opponent_action, config, dt)
-
         move_ball(state.ball, dt)
 
         handle_wall_collisions(state.ball, config)

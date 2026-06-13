@@ -2,18 +2,18 @@ import argparse
 
 from games.pong.config import GameConfig, OpponentSpeed
 from games.pong.game import run_game
-from games.pong.core import controllers
+from games.pong.core import policies
 
-OPPONENT_CONTROLLERS = {
-    "random": controllers.rand,
-    "very-lazy": controllers.very_lazy_follow_ball,
-    "lazy": controllers.lazy_follow_ball,
-    "sleepy": controllers.sleepy_follow_ball,
-    "noisy": controllers.noisy_follow_ball,
-    "defensive": controllers.defensive_follow_ball,
-    "follow": controllers.follow_ball,
-    "predictive": controllers.predictive,
-    "predictive-error": controllers.predictive_with_error,
+OPPONENT_POLICIES = {
+    "random": policies.random_policy,
+    "very-lazy": policies.very_lazy_follow_ball_policy,
+    "lazy": policies.lazy_follow_ball_policy,
+    "sleepy": policies.sleepy_follow_ball_policy,
+    "noisy": policies.noisy_follow_ball_policy,
+    "defensive": policies.defensive_follow_ball_policy,
+    "follow": policies.follow_ball_policy,
+    "predictive": policies.predictive_policy,
+    "predictive-error": policies.predictive_with_error_policy,
 }
 
 
@@ -33,7 +33,7 @@ def parse_args():
 
     parser.add_argument(
         "--opponent",
-        choices=OPPONENT_CONTROLLERS.keys(),
+        choices=OPPONENT_POLICIES.keys(),
         default="very-lazy",
         help="Choose the Pong opponent strategy.",
     )
@@ -58,7 +58,7 @@ def parse_args():
 def main():
     args = parse_args()
 
-    opponent_controller = OPPONENT_CONTROLLERS[args.opponent]
+    opponent_policy = OPPONENT_POLICIES[args.opponent]
     opponent_speed_level = OPPONENT_SPEEDS[args.speed]
 
     config = GameConfig(
@@ -73,7 +73,7 @@ def main():
     )
 
     run_game(
-        opponent_controller=opponent_controller,
+        opponent_policy=opponent_policy,
         title=title,
         config=config,
     )
