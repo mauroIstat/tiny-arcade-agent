@@ -1,3 +1,14 @@
+"""
+Configuration for the Pong game.
+
+This module contains the parameters used to customize the game,
+such as window size, paddle size, ball speed, opponent speed,
+and maximum score.
+
+Changing these values allows us to create easier or harder versions
+of the same game.
+"""
+
 from dataclasses import dataclass
 from enum import Enum
 

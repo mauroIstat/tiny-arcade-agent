@@ -1,3 +1,13 @@
+"""
+Geometry helpers for Pong.
+
+This module converts game entities into geometric shapes used by pygame.
+
+For now, paddles and the ball are represented as rectangles.
+These rectangles are used both for drawing objects on the screen
+and for detecting collisions.
+"""
+
 import pygame
 
 from .entities import Ball, Paddle

@@ -1,26 +1,77 @@
+"""
+Controllers for the Pong game.
+
+A controller is a function that observes the current game state
+and returns an action.
+
+This module contains:
+- a human controller, based on keyboard input;
+- several rule-based computer controllers.
+
+Later, learning-based controllers can be added to introduce
+reinforcement learning.
+"""
+
 import random
 
+import pygame
+
 from .actions import Action
-from ..config import GameConfig
 from .entities import GameState
+from ..config import GameConfig
+
+# =============================================================================
+# Human controllers
+# =============================================================================
+# A human controller reads input from the keyboard and converts it into an Action.
+# In this game, the human player can move the paddle up, down, or keep it still.
+# =============================================================================
+
+
+def keyboard(state: GameState, config: GameConfig) -> Action:
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_UP]:
+        return Action.UP
+
+    if keys[pygame.K_DOWN]:
+        return Action.DOWN
+
+    return Action.STAY
+
+
+# =============================================================================
+# Rule-based computer controllers
+# =============================================================================
+# A computer controller looks at the current GameState and chooses an Action.
+# These controllers do not learn: their behavior is entirely defined by rules.
+#
+# Later, in other games, we will replace rule-based controllers with learning
+# controllers, such as reinforcement learning agents.
+# =============================================================================
 
 
 def do_nothing(state: GameState, config: GameConfig) -> Action:
     return Action.STAY
 
 
-def rand(state: GameState, config: GameConfig) -> Action:
+def random_action(state: GameState, config: GameConfig) -> Action:
     return random.choice([Action.UP, Action.DOWN, Action.STAY])
 
 
-def follow_ball(state: GameState, config: GameConfig) -> Action:
+def very_lazy_follow_ball(state: GameState, config: GameConfig) -> Action:
+    """
+    Opponent follows the ball, but only if the ball is far from the paddle center.
+    """
     ball = state.ball
     opponent = state.opponent
 
-    if ball.center_y < opponent.center_y:
+    tolerance = 60  # Higher values make the opponent lazier and easier.
+
+    if ball.center_y < opponent.center_y - tolerance:
         return Action.UP
 
-    if ball.center_y > opponent.center_y:
+    if ball.center_y > opponent.center_y + tolerance:
         return Action.DOWN
 
     return Action.STAY
@@ -40,46 +91,16 @@ def lazy_follow_ball(state: GameState, config: GameConfig) -> Action:
     return Action.STAY
 
 
-def predictive(state: GameState, config: GameConfig) -> Action:
-    ball = state.ball
-    opponent = state.opponent
+def noisy_follow_ball(state: GameState, config: GameConfig) -> Action:
+    """
+    Opponent follows the ball, but sometimes makes mistakes.
+    """
+    mistake_probability = 0.20  # 20% chance of making a mistake.
 
-    # If the ball is moving away from the opponent,
-    # the opponent returns to the center.
-    if ball.vx < 0:
-        target_y = config.height / 2
-
-    else:
-        distance_x = opponent.x - ball.x
-
-        if ball.vx == 0:
-            target_y = ball.center_y
-        else:
-            time_to_reach = distance_x / ball.vx
-            target_y = ball.center_y + ball.vy * time_to_reach
-
-        # Approximate reflection on top/bottom walls.
-        while target_y < 0 or target_y > config.height:
-            if target_y < 0:
-                target_y = -target_y
-            elif target_y > config.height:
-                target_y = 2 * config.height - target_y
-
-    if target_y < opponent.center_y:
-        return Action.UP
-
-    if target_y > opponent.center_y:
-        return Action.DOWN
-
-    return Action.STAY
-
-
-def predictive_with_error(state: GameState, config: GameConfig) -> Action:
-    # 10% of the time, make a random move.
-    if random.random() < 0.10:
+    if random.random() < mistake_probability:
         return random.choice([Action.UP, Action.DOWN, Action.STAY])
 
-    return predictive(state, config)
+    return follow_ball(state, config)
 
 
 def sleepy_follow_ball(state: GameState, config: GameConfig) -> Action:
@@ -141,31 +162,56 @@ def defensive_follow_ball(state: GameState, config: GameConfig) -> Action:
     return Action.STAY
 
 
-def very_lazy_follow_ball(state: GameState, config: GameConfig) -> Action:
-    """
-    Opponent follows the ball, but only if the ball is far from the paddle center.
-    """
+def follow_ball(state: GameState, config: GameConfig) -> Action:
     ball = state.ball
     opponent = state.opponent
 
-    tolerance = 60  # Higher values make the opponent lazier and easier.
-
-    if ball.center_y < opponent.center_y - tolerance:
+    if ball.center_y < opponent.center_y:
         return Action.UP
 
-    if ball.center_y > opponent.center_y + tolerance:
+    if ball.center_y > opponent.center_y:
         return Action.DOWN
 
     return Action.STAY
 
 
-def noisy_follow_ball(state: GameState, config: GameConfig) -> Action:
-    """
-    Opponent follows the ball, but sometimes makes mistakes.
-    """
-    mistake_probability = 0.20  # 20% chance of making a mistake.
+def predictive(state: GameState, config: GameConfig) -> Action:
+    ball = state.ball
+    opponent = state.opponent
 
-    if random.random() < mistake_probability:
+    # If the ball is moving away from the opponent,
+    # the opponent returns to the center.
+    if ball.vx < 0:
+        target_y = config.height / 2
+
+    else:
+        distance_x = opponent.x - ball.x
+
+        if ball.vx == 0:
+            target_y = ball.center_y
+        else:
+            time_to_reach = distance_x / ball.vx
+            target_y = ball.center_y + ball.vy * time_to_reach
+
+        # Approximate reflection on top/bottom walls.
+        while target_y < 0 or target_y > config.height:
+            if target_y < 0:
+                target_y = -target_y
+            elif target_y > config.height:
+                target_y = 2 * config.height - target_y
+
+    if target_y < opponent.center_y:
+        return Action.UP
+
+    if target_y > opponent.center_y:
+        return Action.DOWN
+
+    return Action.STAY
+
+
+def predictive_with_error(state: GameState, config: GameConfig) -> Action:
+    # 10% of the time, make a random move.
+    if random.random() < 0.10:
         return random.choice([Action.UP, Action.DOWN, Action.STAY])
 
-    return follow_ball(state, config)
+    return predictive(state, config)

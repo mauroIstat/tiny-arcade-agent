@@ -1,3 +1,13 @@
+"""
+Game entities for Pong.
+
+This module defines the main objects that exist in the game:
+paddles, ball, score, and the overall game state.
+
+Entities store information about the game world, such as positions,
+sizes, speeds, and scores.
+"""
+
 from dataclasses import dataclass
 
 

@@ -20,8 +20,9 @@ from .core.physics import (
 
 from .core.geometry import make_ball_rect, make_paddle_rect
 
+from .core.controllers import keyboard
 
-OpponentStrategy = Callable[[GameState, GameConfig], Action]
+Controller = Callable[[GameState, GameConfig], Action]
 
 
 def create_initial_state(config: GameConfig) -> GameState:
@@ -71,18 +72,6 @@ def handle_score(state: GameState, config: GameConfig) -> None:
     if ball.x > config.width:
         state.score.player += 1
         reset_ball(ball, config, Direction.LEFT)
-
-
-def get_player_action() -> Action:
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_UP]:
-        return Action.UP
-
-    if keys[pygame.K_DOWN]:
-        return Action.DOWN
-
-    return Action.STAY
 
 
 def draw_center_line(screen: pygame.Surface, config: GameConfig) -> None:
@@ -148,9 +137,7 @@ def draw_game_over(
     message_rect = message_text.get_rect(
         center=(config.width / 2, config.height / 2 - 60)
     )
-    score_rect = score_text.get_rect(
-        center=(config.width / 2, config.height / 2)
-    )
+    score_rect = score_text.get_rect(center=(config.width / 2, config.height / 2))
     restart_rect = restart_text.get_rect(
         center=(config.width / 2, config.height / 2 + 60)
     )
@@ -187,7 +174,7 @@ def wait_for_restart() -> bool:
 
 
 def run_game(
-    opponent_strategy: OpponentStrategy,
+    opponent_controller: Controller,
     title: str = "Tiny Pong Agents",
     config: GameConfig | None = None,
 ) -> None:
@@ -212,15 +199,17 @@ def run_game(
                 pygame.quit()
                 sys.exit()
 
-        player_action = get_player_action()
-        move_paddle(state.player, player_action, config, dt)
+        player_action = keyboard(state, config)
+        opponent_action = opponent_controller(state, config)
 
-        opponent_action = opponent_strategy(state, config)
+        move_paddle(state.player, player_action, config, dt)
         move_paddle(state.opponent, opponent_action, config, dt)
 
         move_ball(state.ball, dt)
+
         handle_wall_collisions(state.ball, config)
         handle_paddle_collisions(state)
+
         handle_score(state, config)
 
         winner = get_winner(state, config)

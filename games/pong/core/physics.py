@@ -1,3 +1,13 @@
+"""
+Physics helpers for Pong.
+
+This module updates the physical state of the game:
+moving paddles, moving the ball, handling wall bounces,
+and detecting collisions between the ball and paddles.
+
+The physics is intentionally simple and designed for teaching.
+"""
+
 import random
 from enum import Enum
 
