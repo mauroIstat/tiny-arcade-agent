@@ -42,7 +42,7 @@ class GameConfig:
     opponent_speed_level: OpponentSpeed = OpponentSpeed.MEDIUM
 
     # Ball
-    ball_size: int = 10
+    ball_size: int = 20
     ball_speed_x: float = 250
     ball_speed_y_min: int = 120
     ball_speed_y_max: int = 220

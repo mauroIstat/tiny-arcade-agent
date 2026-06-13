@@ -29,6 +29,7 @@ import pygame
 
 from .config import GameConfig
 from .core.actions import Action
+from .core.assets import GameAssets, load_assets
 from .core.entities import Ball, GameState, Paddle, Score
 from .core.geometry import make_ball_rect, make_paddle_rect
 from .core.policies import keyboard_policy as player_policy
@@ -136,14 +137,16 @@ def draw_game(
     font: pygame.font.Font,
     state: GameState,
     config: GameConfig,
+    assets: GameAssets,
 ) -> None:
-    screen.fill(config.black)
+    
+    screen.blit(assets.background, (0, 0))
 
     draw_center_line(screen, config)
 
-    pygame.draw.rect(screen, config.white, make_paddle_rect(state.player))
-    pygame.draw.rect(screen, config.white, make_paddle_rect(state.opponent))
-    pygame.draw.rect(screen, config.white, make_ball_rect(state.ball))
+    screen.blit(assets.paddle, make_paddle_rect(state.player))
+    screen.blit(assets.paddle, make_paddle_rect(state.opponent))
+    screen.blit(assets.ball, make_ball_rect(state.ball))
 
     score_text = font.render(
         f"{state.score.player}   {state.score.opponent}",
@@ -197,8 +200,22 @@ def draw_game_over(
     pygame.display.flip()
 
 
-def draw_center_line(screen: pygame.Surface, config: GameConfig) -> None:
+def draw_center_line(
+    screen: pygame.Surface,
+    config: GameConfig,
+) -> None:
+    neon_blue = (0, 220, 255)
+
     for y in range(0, config.height, 30):
+
+        # Glow
+        pygame.draw.rect(
+            screen,
+            neon_blue,
+            (config.width // 2 - 4, y, 6, 15),
+        )
+
+        # Core
         pygame.draw.rect(
             screen,
             config.white,
@@ -244,6 +261,9 @@ def run_game(
     pygame.init()
 
     screen = pygame.display.set_mode((config.width, config.height))
+
+    assets = load_assets(config)
+
     pygame.display.set_caption(title)
 
     clock = pygame.time.Clock()
@@ -304,4 +324,4 @@ def run_game(
                 pygame.quit()
                 sys.exit()
         else:
-            draw_game(screen, font, state, config)
+            draw_game(screen, font, state, config, assets)
