@@ -1,3 +1,27 @@
+"""
+Core game logic for Pong.
+
+This module coordinates the execution of a Pong match.
+
+Its responsibilities include:
+- creating the initial game state;
+- running the main game loop;
+- updating the simulation;
+- handling scoring and win conditions;
+- rendering the game on screen.
+
+The game loop follows the classic structure used by many
+real-time games:
+
+    Observe state
+    -> Choose actions
+    -> Update game state
+    -> Render frame
+
+This module acts as the orchestrator of the game, connecting
+policies, physics, game state, and rendering.
+"""
+
 import sys
 from collections.abc import Callable
 
@@ -6,6 +30,8 @@ import pygame
 from .config import GameConfig
 from .core.actions import Action
 from .core.entities import Ball, GameState, Paddle, Score
+from .core.geometry import make_ball_rect, make_paddle_rect
+from .core.policies import keyboard_policy as player_policy
 
 from .core.physics import (
     Direction,
@@ -18,11 +44,7 @@ from .core.physics import (
     reset_ball,
 )
 
-from .core.geometry import make_ball_rect, make_paddle_rect
-
-from .core.policies import keyboard_policy as player_policy
-
-Controller = Callable[[GameState, GameConfig], Action]
+Policy = Callable[[GameState, GameConfig], Action]
 
 
 def create_initial_state(config: GameConfig) -> GameState:
@@ -74,14 +96,40 @@ def handle_score(state: GameState, config: GameConfig) -> None:
         reset_ball(ball, config, Direction.LEFT)
 
 
-def draw_center_line(screen: pygame.Surface, config: GameConfig) -> None:
-    for y in range(0, config.height, 30):
-        pygame.draw.rect(
-            screen,
-            config.white,
-            (config.width // 2 - 2, y, 4, 15),
-        )
+def get_winner(state: GameState, config: GameConfig) -> str | None:
+    if state.score.player >= config.max_score:
+        return "PLAYER"
 
+    if state.score.opponent >= config.max_score:
+        return "OPPONENT"
+
+    return None
+
+
+def wait_for_restart() -> bool:
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return False
+
+                if event.key == pygame.K_SPACE:
+                    return True
+
+
+
+# =============================================================================
+# Rendering
+# =============================================================================
+# draw_game() converts the current GameState into a visual
+# representation that can be displayed on the screen.
+#
+# At every frame, the screen is cleared and redrawn from
+# scratch using the latest game state.
+# =============================================================================
 
 def draw_game(
     screen: pygame.Surface,
@@ -149,38 +197,50 @@ def draw_game_over(
     pygame.display.flip()
 
 
-def get_winner(state: GameState, config: GameConfig) -> str | None:
-    if state.score.player >= config.max_score:
-        return "PLAYER"
+def draw_center_line(screen: pygame.Surface, config: GameConfig) -> None:
+    for y in range(0, config.height, 30):
+        pygame.draw.rect(
+            screen,
+            config.white,
+            (config.width // 2 - 2, y, 4, 15),
+        )
 
-    if state.score.opponent >= config.max_score:
-        return "OPPONENT"
 
-    return None
-
-
-def wait_for_restart() -> bool:
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    return False
-
-                if event.key == pygame.K_SPACE:
-                    return True
-
+# =============================================================================
+# Main game loop
+# =============================================================================
+# Every real-time game follows the same fundamental pattern:
+#
+#   Observe state
+#   -> Choose actions
+#   -> Update game state
+#   -> Draw a new frame
+#
+# This cycle is repeated many times per second, creating the
+# illusion of continuous motion.
+#
+# run_game() coordinates all these steps and keeps the
+# simulation running until the player exits the game.
+# =============================================================================
 
 def run_game(
-    opponent_policy,
+    opponent_policy: Policy,
     title: str = "Tiny Pong Agents",
     config: GameConfig | None = None,
 ) -> None:
     if config is None:
         config = GameConfig()
 
+    # =============================================================================
+    # Pygame initialization
+    # =============================================================================
+    # Pygame provides the game window, keyboard input handling,
+    # graphics rendering, text drawing, and timing utilities.
+    #
+    # Here we create the game window and initialize the resources
+    # needed by the game loop.
+    # =============================================================================
+    
     pygame.init()
 
     screen = pygame.display.set_mode((config.width, config.height))
@@ -192,6 +252,22 @@ def run_game(
     state = create_initial_state(config)
 
     while True:
+
+        # =============================================================================
+        # Frame timing
+        # =============================================================================
+        # Measure the time elapsed since the previous frame and limit
+        # the maximum frame rate.
+        #
+        # The elapsed time (dt) is used to make movement independent
+        # from the frame rate:
+        #
+        #     displacement = speed × time
+        #
+        # This ensures that the game runs at the same speed on both
+        # fast and slow computers.
+        # =============================================================================
+
         dt = clock.tick(config.fps) / 1000
 
         for event in pygame.event.get():
@@ -199,6 +275,10 @@ def run_game(
                 pygame.quit()
                 sys.exit()
 
+        # =============================================================================
+        # Actions
+        # =============================================================================
+        
         # Ask each policy what action it wants to perform
         player_action = player_policy(state, config)
         opponent_action = opponent_policy(state, config)
