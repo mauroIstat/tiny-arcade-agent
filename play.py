@@ -1,3 +1,17 @@
+"""
+Pong launcher.
+
+This script is the entry point of the Pong game.
+
+It parses command-line arguments, creates a game configuration,
+selects the opponent policy, and starts the game.
+
+Different opponent policies can be used to demonstrate how
+agents make decisions, from simple rule-based behaviors to
+more advanced AI techniques introduced later in the project.
+"""
+
+
 import argparse
 
 from games.pong.config import GameConfig, OpponentSpeed
@@ -58,12 +72,15 @@ def parse_args():
 def main():
     args = parse_args()
 
+    # Command-line arguments
     opponent_policy = OPPONENT_POLICIES[args.opponent]
     opponent_speed_level = OPPONENT_SPEEDS[args.speed]
+    max_score = args.max_score
 
+    # Game configuration
     config = GameConfig(
         opponent_speed_level=opponent_speed_level,
-        max_score=args.max_score,
+        max_score=max_score,
     )
 
     title = (
