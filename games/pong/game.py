@@ -31,7 +31,7 @@ from .config import GameConfig
 from .core.actions import Action
 from .core.rendering import render_game, render_game_over
 from .core.assets import load_assets
-from .core.entities import Ball, GameScreen, GameState, Paddle, Score
+from .core.entities import Ball, GameScreen, GameState, Paddle, Score, Winner
 from .core.policies import keyboard_policy as player_policy
 
 from .core.physics import (
@@ -99,12 +99,12 @@ def handle_score(state: GameState, config: GameConfig) -> None:
         reset_ball(ball, config, Direction.LEFT)
 
 
-def get_winner(state: GameState, config: GameConfig) -> str | None:
+def get_winner(state: GameState, config: GameConfig) -> Winner | None:
     if state.score.player >= config.max_score:
-        return "PLAYER"
+        return Winner.PLAYER
 
     if state.score.opponent >= config.max_score:
-        return "OPPONENT"
+        return Winner.OPPONENT
 
     return None
 
@@ -224,14 +224,7 @@ def run_game(
             render_game(screen, font, state, config, assets)
 
         elif state.screen == GameScreen.GAME_OVER:
-            render_game_over(
-                screen,
-                font,
-                state,
-                config,
-                assets,
-                state.winner,
-            )
+            render_game_over(screen, font, state, config, assets)
 
             if wait_for_restart():
                 state = create_initial_state(config)

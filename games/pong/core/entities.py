@@ -11,6 +11,9 @@ sizes, speeds, and scores.
 from dataclasses import dataclass
 from enum import Enum, auto
 
+class Winner(Enum):
+    PLAYER = auto()
+    OPPONENT = auto()
 
 class GameScreen(Enum):
     PLAYING = auto()
@@ -59,4 +62,4 @@ class GameState:
     ball: Ball
     score: Score
     screen: GameScreen = GameScreen.PLAYING
-    winner: str | None = None
+    winner: Winner | None = None

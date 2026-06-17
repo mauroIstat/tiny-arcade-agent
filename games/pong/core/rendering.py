@@ -2,7 +2,7 @@ import pygame
 
 from ..config import GameConfig
 from .assets import GameAssets
-from .entities import Ball, GameState, Paddle
+from .entities import Ball, GameState, Paddle, Winner
 
 
 def render_background(
@@ -84,8 +84,7 @@ def render_game_over(
     font: pygame.font.Font,
     state: GameState,
     config: GameConfig,
-    assets: GameAssets,
-    winner: str,
+    assets: GameAssets
 ) -> None:
 
     # Background
@@ -102,7 +101,7 @@ def render_game_over(
     screen.blit(overlay, (0, 0))
 
     # Messages
-    if winner == "PLAYER":
+    if state.winner == Winner.PLAYER:
         message = "YOU WIN!"
         message_color = (0, 255, 255)
     else:
