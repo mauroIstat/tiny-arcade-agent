@@ -84,7 +84,7 @@ def main():
     )
 
     title = (
-        "Tiny Arcade Agents - Pong "
+        "Tiny Arcade Agents - Space Pong "
         f"| opponent: {args.opponent} "
         f"| speed: {args.speed}"
     )

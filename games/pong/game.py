@@ -29,9 +29,9 @@ import pygame
 
 from .config import GameConfig
 from .core.actions import Action
-from .core.assets import GameAssets, load_assets
-from .core.entities import Ball, GameState, Paddle, Score
-from .core.geometry import make_ball_rect, make_paddle_rect
+from .core.rendering import render_game, render_game_over
+from .core.assets import load_assets
+from .core.entities import Ball, GameScreen, GameState, Paddle, Score
 from .core.policies import keyboard_policy as player_policy
 
 from .core.physics import (
@@ -80,6 +80,8 @@ def create_initial_state(config: GameConfig) -> GameState:
         opponent=opponent,
         ball=ball,
         score=score,
+        screen=GameScreen.PLAYING,
+        winner=None
     )
 
 
@@ -121,114 +123,12 @@ def wait_for_restart() -> bool:
                     return True
 
 
-
-# =============================================================================
-# Rendering
-# =============================================================================
-# draw_game() converts the current GameState into a visual
-# representation that can be displayed on the screen.
-#
-# At every frame, the screen is cleared and redrawn from
-# scratch using the latest game state.
-# =============================================================================
-
-def draw_game(
-    screen: pygame.Surface,
-    font: pygame.font.Font,
-    state: GameState,
-    config: GameConfig,
-    assets: GameAssets,
-) -> None:
-    
-    screen.blit(assets.background, (0, 0))
-
-    draw_center_line(screen, config)
-
-    screen.blit(assets.paddle, make_paddle_rect(state.player))
-    screen.blit(assets.paddle, make_paddle_rect(state.opponent))
-    screen.blit(assets.ball, make_ball_rect(state.ball))
-
-    score_text = font.render(
-        f"{state.score.player}   {state.score.opponent}",
-        True,
-        config.white,
-    )
-
-    score_rect = score_text.get_rect(center=(config.width / 2, 40))
-    screen.blit(score_text, score_rect)
-
-    pygame.display.flip()
-
-
-def draw_game_over(
-    screen: pygame.Surface,
-    font: pygame.font.Font,
-    state: GameState,
-    config: GameConfig,
-    winner: str,
-) -> None:
-    screen.fill(config.black)
-
-    if winner == "PLAYER":
-        message = "You win!"
-    else:
-        message = "Computer wins!"
-
-    score_message = f"Final score: {state.score.player} - {state.score.opponent}"
-    restart_message = "Press SPACE to play again or ESC to quit"
-
-    message_text = font.render(message, True, config.white)
-    score_text = font.render(score_message, True, config.white)
-    restart_text = pygame.font.SysFont(None, 32).render(
-        restart_message,
-        True,
-        config.white,
-    )
-
-    message_rect = message_text.get_rect(
-        center=(config.width / 2, config.height / 2 - 60)
-    )
-    score_rect = score_text.get_rect(center=(config.width / 2, config.height / 2))
-    restart_rect = restart_text.get_rect(
-        center=(config.width / 2, config.height / 2 + 60)
-    )
-
-    screen.blit(message_text, message_rect)
-    screen.blit(score_text, score_rect)
-    screen.blit(restart_text, restart_rect)
-
-    pygame.display.flip()
-
-
-def draw_center_line(
-    screen: pygame.Surface,
-    config: GameConfig,
-) -> None:
-    neon_blue = (0, 220, 255)
-
-    for y in range(0, config.height, 30):
-
-        # Glow
-        pygame.draw.rect(
-            screen,
-            neon_blue,
-            (config.width // 2 - 4, y, 6, 15),
-        )
-
-        # Core
-        pygame.draw.rect(
-            screen,
-            config.white,
-            (config.width // 2 - 2, y, 4, 15),
-        )
-
-
 # =============================================================================
 # Main game loop
 # =============================================================================
 # Every real-time game follows the same fundamental pattern:
 #
-#   Observe state
+#   -> Observe state
 #   -> Choose actions
 #   -> Update game state
 #   -> Draw a new frame
@@ -245,6 +145,7 @@ def run_game(
     title: str = "Tiny Pong Agents",
     config: GameConfig | None = None,
 ) -> None:
+    
     if config is None:
         config = GameConfig()
 
@@ -316,12 +217,24 @@ def run_game(
         winner = get_winner(state, config)
 
         if winner is not None:
-            draw_game_over(screen, font, state, config, winner)
+            state.screen = GameScreen.GAME_OVER
+            state.winner = winner
+
+        if state.screen == GameScreen.PLAYING:
+            render_game(screen, font, state, config, assets)
+
+        elif state.screen == GameScreen.GAME_OVER:
+            render_game_over(
+                screen,
+                font,
+                state,
+                config,
+                assets,
+                state.winner,
+            )
 
             if wait_for_restart():
                 state = create_initial_state(config)
             else:
                 pygame.quit()
                 sys.exit()
-        else:
-            draw_game(screen, font, state, config, assets)
