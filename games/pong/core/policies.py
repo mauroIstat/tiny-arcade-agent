@@ -14,7 +14,7 @@ reinforcement learning.
 
 import random
 
-import pygame
+from .inputs import PlayerInput
 
 from .actions import Action
 from .entities import GameState
@@ -28,17 +28,19 @@ from ..config import GameConfig
 # =============================================================================
 
 
-def keyboard_policy(state: GameState, config: GameConfig) -> Action:
-    keys = pygame.key.get_pressed()
-
-    if keys[pygame.K_UP]:
+def player_policy(
+    state: GameState,
+    config: GameConfig,
+    player_input: PlayerInput,
+) -> Action:
+    
+    if player_input.up:
         return Action.UP
 
-    if keys[pygame.K_DOWN]:
+    if player_input.down:
         return Action.DOWN
 
     return Action.STAY
-
 
 # =============================================================================
 # Rule-based computer policies

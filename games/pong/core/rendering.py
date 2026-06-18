@@ -1,13 +1,13 @@
 import pygame
 
 from ..config import GameConfig
-from .assets import GameAssets
+from .sprites import GameSprites
 from .entities import Ball, GameState, Paddle, Winner
 
 
 def render_background(
     screen: pygame.Surface,
-    assets: GameAssets,
+    assets: GameSprites,
 ) -> None:
     screen.blit(assets.background, (0, 0))
 
@@ -66,15 +66,15 @@ def render_game(
     font: pygame.font.Font,
     state: GameState,
     config: GameConfig,
-    assets: GameAssets,
+    sprites: GameSprites,
 ) -> None:
-    render_background(screen, assets)
+    render_background(screen, sprites)
     render_center_line(screen, config)
 
-    render_paddle(screen, state.player, assets.paddle)
-    render_paddle(screen, state.opponent, assets.paddle)
+    render_paddle(screen, state.player, sprites.paddle)
+    render_paddle(screen, state.opponent, sprites.paddle)
 
-    render_ball(screen, state.ball, assets.ball)
+    render_ball(screen, state.ball, sprites.ball)
     render_score(screen, font, state, config)
 
     pygame.display.flip()
@@ -84,11 +84,11 @@ def render_game_over(
     font: pygame.font.Font,
     state: GameState,
     config: GameConfig,
-    assets: GameAssets
+    sprites: GameSprites
 ) -> None:
 
     # Background
-    render_background(screen, assets)
+    render_background(screen, sprites)
 
     # Dark overlay
     overlay = pygame.Surface(

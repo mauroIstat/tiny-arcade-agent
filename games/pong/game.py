@@ -29,10 +29,11 @@ import pygame
 
 from .config import GameConfig
 from .core.actions import Action
+from .core.inputs import PlayerInput
 from .core.rendering import render_game, render_game_over
-from .core.assets import load_assets
+from .core.sprites import load_sprites
 from .core.entities import Ball, GameScreen, GameState, Paddle, Score, Winner
-from .core.policies import keyboard_policy as player_policy
+from .core.policies import player_policy
 
 from .core.physics import (
     Direction,
@@ -99,6 +100,15 @@ def handle_score(state: GameState, config: GameConfig) -> None:
         reset_ball(ball, config, Direction.LEFT)
 
 
+def read_player_input() -> PlayerInput:
+    keys = pygame.key.get_pressed()
+
+    return PlayerInput(
+        up=keys[pygame.K_UP],
+        down=keys[pygame.K_DOWN],
+    )
+
+
 def get_winner(state: GameState, config: GameConfig) -> Winner | None:
     if state.score.player >= config.max_score:
         return Winner.PLAYER
@@ -163,7 +173,7 @@ def run_game(
 
     screen = pygame.display.set_mode((config.width, config.height))
 
-    assets = load_assets(config)
+    sprites = load_sprites(config)
 
     pygame.display.set_caption(title)
 
@@ -197,14 +207,37 @@ def run_game(
                 sys.exit()
 
         # =============================================================================
+        # Input
+        # =============================================================================
+        # Read the current keyboard state and convert it into a simple
+        # PlayerInput object.
+        #
+        # Pygame stays here, inside the game loop.
+        # The player policy receives only clean game input.
+        # =============================================================================
+
+        player_input = read_player_input()
+
+
+        # =============================================================================
         # Actions
         # =============================================================================
-        
-        # Ask each policy what action it wants to perform
-        player_action = player_policy(state, config)
+        # Ask each policy what action it wants to perform.
+        #
+        # The human player policy uses PlayerInput.
+        # The opponent policy observes the GameState and decides automatically.
+        # =============================================================================
+
+        player_action = player_policy(state, config, player_input)
         opponent_action = opponent_policy(state, config)
 
-        # Apply the chosen actions to the paddles
+
+        # =============================================================================
+        # Update simulation
+        # =============================================================================
+        # Apply actions, move the ball, detect collisions, and update the score.
+        # =============================================================================
+
         move_paddle(state.player, player_action, config, dt)
         move_paddle(state.opponent, opponent_action, config, dt)
         move_ball(state.ball, dt)
@@ -214,17 +247,24 @@ def run_game(
 
         handle_score(state, config)
 
+        # =============================================================================
+        # Screen state
+        # =============================================================================
+        # Check whether the match is over and switch to the game-over screen.
+        # =============================================================================
+
         winner = get_winner(state, config)
 
         if winner is not None:
             state.screen = GameScreen.GAME_OVER
             state.winner = winner
 
+
         if state.screen == GameScreen.PLAYING:
-            render_game(screen, font, state, config, assets)
+            render_game(screen, font, state, config, sprites)
 
         elif state.screen == GameScreen.GAME_OVER:
-            render_game_over(screen, font, state, config, assets)
+            render_game_over(screen, font, state, config, sprites)
 
             if wait_for_restart():
                 state = create_initial_state(config)

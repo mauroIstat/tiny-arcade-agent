@@ -7,25 +7,25 @@ from ..config import GameConfig
 
 
 @dataclass
-class GameAssets:
+class GameSprites:
     background: pygame.Surface
     paddle: pygame.Surface
     ball: pygame.Surface
 
 
-def load_assets(config: GameConfig) -> GameAssets:
-    assets_dir = Path(__file__).resolve().parents[1] / "assets"
+def load_sprites(config: GameConfig) -> GameSprites:
+    sprites_dir = Path(__file__).resolve().parents[1] / "assets"
 
     background = pygame.image.load(
-        assets_dir / "backgrounds" / "space_background.png"
+        sprites_dir / "backgrounds" / "space_background.png"
     ).convert()
 
     paddle = pygame.image.load(
-        assets_dir / "paddles" / "space_paddle.png"
+        sprites_dir / "paddles" / "space_paddle.png"
     ).convert_alpha()
 
     ball = pygame.image.load(
-        assets_dir / "balls" / "space_ball.png"
+        sprites_dir / "balls" / "space_ball.png"
     ).convert_alpha()
 
     background = pygame.transform.scale(
@@ -43,7 +43,7 @@ def load_assets(config: GameConfig) -> GameAssets:
         (config.ball_size, config.ball_size),
     )
 
-    return GameAssets(
+    return GameSprites(
         background=background,
         paddle=paddle,
         ball=ball,
