@@ -33,7 +33,7 @@ tiny-arcade-agent/
 +-- games/
 |   +-- pong/
 |   +-- breakout/
-+-- play.py
++-- play_pong.py
 +-- requirements.txt
 +-- README.md
 ```
@@ -46,10 +46,17 @@ Pong keeps the two main teaching files at the top of `games/pong/`:
 The internal building blocks live in `games/pong/core/`:
 
 - `actions.py`: possible actions: up, down, stay.
-- `controllers.py`: algorithms used by the virtual opponent.
+- `inputs.py`: keyboard input converted into simple data.
+- `policies.py`: algorithms used by the virtual opponent.
 - `entities.py`: main game objects: paddle, ball, score, and game state.
 - `geometry.py`: conversion from game objects to pygame rectangles.
 - `physics.py`: movement, collisions, bounces, and ball reset logic.
+- `rendering.py`: drawing the current game state on screen.
+- `sprites.py`: loading visual assets.
+
+For now, each game has its own launcher. Pong uses `play_pong.py`. Breakout
+will later use `play_breakout.py`. A shared launcher can become a useful
+refactoring exercise after more than one game is implemented.
 
 ## Windows setup, recommended
 
@@ -96,13 +103,13 @@ python -m pip install -r requirements.txt
 ### 5. Run Pong
 
 ```powershell
-python play.py
+python play_pong.py
 ```
 
 To see all available options:
 
 ```powershell
-python play.py --help
+python play_pong.py --help
 ```
 
 ## WSL setup, optional
@@ -141,7 +148,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python play.py
+python play_pong.py
 ```
 
 Pygame opens a graphical window. On Windows 11, WSLg usually supports this
@@ -158,7 +165,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python play.py
+python play_pong.py
 ```
 
 On some Linux distributions, you may need to install Python 3.12 and the
@@ -169,33 +176,33 @@ On some Linux distributions, you may need to install Python 3.12 and the
 Run the default game:
 
 ```bash
-python play.py
+python play_pong.py
 ```
 
 Choose a different opponent:
 
 ```bash
-python play.py --opponent random
-python play.py --opponent predictive
+python play_pong.py --opponent random
+python play_pong.py --opponent predictive
 ```
 
 Choose the opponent speed:
 
 ```bash
-python play.py --speed slow
-python play.py --speed fast
+python play_pong.py --speed slow
+python play_pong.py --speed fast
 ```
 
 Choose the score needed to win:
 
 ```bash
-python play.py --max-score 3
+python play_pong.py --max-score 3
 ```
 
 You can combine options:
 
 ```bash
-python play.py --opponent defensive --speed fast --max-score 7
+python play_pong.py --opponent defensive --speed fast --max-score 7
 ```
 
 ## Troubleshooting
@@ -253,6 +260,6 @@ instead.
 ## Games
 
 - [Pong](games/pong/README.md): programming fundamentals and simple opponent
-  controllers.
+  policies.
 - [Breakout](games/breakout/README.md): coming next, with a first introduction
   to reinforcement learning.

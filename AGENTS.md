@@ -34,6 +34,9 @@ terminal states, and eventually simple Q-learning.
   line entrypoints separated where practical.
 - Use `pygame` for playable visualizations, but design future reinforcement
   learning logic so it can run without opening a window.
+- Keep command line launchers separate while the project is still growing:
+  `play_pong.py` for Pong, and later `play_breakout.py` for Breakout. A shared
+  launcher can be introduced later as a classroom refactoring exercise.
 - Keep modules focused and names beginner-friendly.
 - Prefer explicit data objects and functions over metaprogramming or deeply
   nested class hierarchies.
