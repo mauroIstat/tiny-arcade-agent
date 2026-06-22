@@ -24,9 +24,7 @@ def load_sprites(config: GameConfig) -> GameSprites:
         sprites_dir / "paddles" / "space_paddle.png"
     ).convert_alpha()
 
-    ball = pygame.image.load(
-        sprites_dir / "balls" / "space_ball.png"
-    ).convert_alpha()
+    ball = pygame.image.load(sprites_dir / "balls" / "space_ball.png").convert_alpha()
 
     background = pygame.transform.scale(
         background,

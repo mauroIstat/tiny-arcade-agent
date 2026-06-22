@@ -85,7 +85,7 @@ def render_game_over(
     font: pygame.font.Font,
     state: GameState,
     config: GameConfig,
-    sprites: GameSprites
+    sprites: GameSprites,
 ) -> None:
 
     # Background
@@ -109,18 +109,11 @@ def render_game_over(
         message = "COMPUTER WINS!"
         message_color = (255, 100, 100)
 
-    score_message = (
-        f"Final score: "
-        f"{state.score.player} - {state.score.opponent}"
-    )
+    score_message = f"Final score: " f"{state.score.player} - {state.score.opponent}"
 
-    restart_message = (
-        "Press SPACE to play again"
-    )
+    restart_message = "Press SPACE to play again"
 
-    quit_message = (
-        "Press ESC to quit"
-    )
+    quit_message = "Press ESC to quit"
 
     # Fonts
     title_font = pygame.font.SysFont(None, 56)
@@ -134,7 +127,7 @@ def render_game_over(
         True,
         message_color,
     )
-    
+
     score_text = info_font.render(
         score_message,
         True,
@@ -154,21 +147,13 @@ def render_game_over(
     )
 
     # Position
-    title_rect = title_text.get_rect(
-        center=(config.width // 2, 180)
-    )
+    title_rect = title_text.get_rect(center=(config.width // 2, 180))
 
-    score_rect = score_text.get_rect(
-        center=(config.width // 2, 250)
-    )
+    score_rect = score_text.get_rect(center=(config.width // 2, 250))
 
-    restart_rect = restart_text.get_rect(
-        center=(config.width // 2, 320)
-    )
+    restart_rect = restart_text.get_rect(center=(config.width // 2, 320))
 
-    quit_rect = quit_text.get_rect(
-        center=(config.width // 2, 360)
-    )
+    quit_rect = quit_text.get_rect(center=(config.width // 2, 360))
 
     # Draw
     screen.blit(title_text, title_rect)

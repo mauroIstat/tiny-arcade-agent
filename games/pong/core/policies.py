@@ -33,7 +33,7 @@ def player_policy(
     config: GameConfig,
     player_input: PlayerInput,
 ) -> Action:
-    
+
     if player_input.up:
         return Action.UP
 
@@ -41,6 +41,7 @@ def player_policy(
         return Action.DOWN
 
     return Action.STAY
+
 
 # =============================================================================
 # Rule-based computer policies

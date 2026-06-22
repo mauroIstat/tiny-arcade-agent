@@ -11,13 +11,16 @@ sizes, speeds, and scores.
 from dataclasses import dataclass
 from enum import Enum, auto
 
+
 class Winner(Enum):
     PLAYER = auto()
     OPPONENT = auto()
 
+
 class GameScreen(Enum):
     PLAYING = auto()
     GAME_OVER = auto()
+
 
 @dataclass
 class Paddle:

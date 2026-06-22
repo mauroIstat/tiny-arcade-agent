@@ -57,11 +57,11 @@ def move_ball(ball: Ball, dt: float) -> None:
 def handle_wall_collisions(ball: Ball, config: GameConfig) -> None:
     if ball.y <= 0:
         ball.y = 0
-        ball.vy *= -1 # Bounce off the top wall inverting vertical velocity.
+        ball.vy *= -1  # Bounce off the top wall inverting vertical velocity.
 
     if ball.y + ball.size >= config.height:
         ball.y = config.height - ball.size
-        ball.vy *= -1 # Bounce off the bottom wall inverting vertical velocity.
+        ball.vy *= -1  # Bounce off the bottom wall inverting vertical velocity.
 
 
 def handle_paddle_collisions(state: GameState) -> None:
@@ -73,8 +73,8 @@ def handle_paddle_collisions(state: GameState) -> None:
 
     if ball_rect.colliderect(player_rect) and ball.vx < 0:
         ball.x = state.player.x + state.player.width
-        ball.vx *= -1 # Bounce off the player's paddle inverting horizontal velocity.
+        ball.vx *= -1  # Bounce off the player's paddle inverting horizontal velocity.
 
     if ball_rect.colliderect(opponent_rect) and ball.vx > 0:
         ball.x = state.opponent.x - ball.size
-        ball.vx *= -1 # Bounce off the opponent's paddle inverting horizontal velocity.
+        ball.vx *= -1  # Bounce off the opponent's paddle inverting horizontal velocity.

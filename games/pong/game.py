@@ -82,7 +82,7 @@ def create_initial_state(config: GameConfig) -> GameState:
         ball=ball,
         score=score,
         screen=GameScreen.PLAYING,
-        winner=None
+        winner=None,
     )
 
 
@@ -150,12 +150,13 @@ def wait_for_restart() -> bool:
 # simulation running until the player exits the game.
 # =============================================================================
 
+
 def run_game(
     opponent_policy: Policy,
     title: str = "Tiny Pong Game",
     config: GameConfig | None = None,
 ) -> None:
-    
+
     if config is None:
         config = GameConfig()
 
@@ -168,7 +169,7 @@ def run_game(
     # Here we create the game window and initialize the resources
     # needed by the game loop.
     # =============================================================================
-    
+
     pygame.init()
 
     screen = pygame.display.set_mode((config.width, config.height))
@@ -218,7 +219,6 @@ def run_game(
 
         player_input = read_player_input()
 
-
         # =============================================================================
         # Actions
         # =============================================================================
@@ -230,7 +230,6 @@ def run_game(
 
         player_action = player_policy(state, config, player_input)
         opponent_action = opponent_policy(state, config)
-
 
         # =============================================================================
         # Update simulation
@@ -258,7 +257,6 @@ def run_game(
         if winner is not None:
             state.screen = GameScreen.GAME_OVER
             state.winner = winner
-
 
         if state.screen == GameScreen.PLAYING:
             render_game(screen, font, state, config, sprites)
