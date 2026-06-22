@@ -34,6 +34,7 @@ tiny-arcade-agent/
 |   +-- pong/
 |   +-- breakout/
 +-- play_pong.py
++-- play_breakout.py
 +-- requirements.txt
 +-- README.md
 ```
@@ -55,8 +56,11 @@ The internal building blocks live in `games/pong/core/`:
 - `sprites.py`: loading visual assets.
 
 For now, each game has its own launcher. Pong uses `play_pong.py`. Breakout
-will later use `play_breakout.py`. A shared launcher can become a useful
-refactoring exercise after more than one game is implemented.
+uses `play_breakout.py`. A shared launcher can become a useful refactoring
+exercise after students have seen more than one separate launcher.
+
+Both games can use sprites for visible objects. If an expected image is missing,
+the renderer falls back to simple geometric shapes so the game remains runnable.
 
 ## Windows setup, recommended
 
@@ -205,6 +209,21 @@ You can combine options:
 python play_pong.py --opponent defensive --speed fast --max-score 7
 ```
 
+## Playing Breakout
+
+Run the default keyboard-controlled game:
+
+```bash
+python play_breakout.py
+```
+
+Try a simple policy:
+
+```bash
+python play_breakout.py --policy random
+python play_breakout.py --policy follow
+```
+
 ## Troubleshooting
 
 ### `python` uses the wrong version
@@ -261,5 +280,5 @@ instead.
 
 - [Pong](games/pong/README.md): programming fundamentals and simple opponent
   policies.
-- [Breakout](games/breakout/README.md): coming next, with a first introduction
-  to reinforcement learning.
+- [Breakout](games/breakout/README.md): first introduction to reinforcement
+  learning ideas with observations, actions, rewards, and episodes.

@@ -21,13 +21,18 @@ import pygame
 from ..config import GameConfig
 from .sprites import GameSprites
 from .entities import Ball, GameState, Paddle, Winner
+from .geometry import make_ball_rect, make_paddle_rect
 
 
 def render_background(
     screen: pygame.Surface,
+    config: GameConfig,
     assets: GameSprites,
 ) -> None:
-    screen.blit(assets.background, (0, 0))
+    if assets.background is None:
+        screen.fill(config.black)
+    else:
+        screen.blit(assets.background, (0, 0))
 
 
 def render_center_line(
@@ -52,18 +57,26 @@ def render_center_line(
 
 def render_paddle(
     screen: pygame.Surface,
+    config: GameConfig,
     paddle: Paddle,
-    sprite: pygame.Surface,
+    sprite: pygame.Surface | None,
 ) -> None:
-    screen.blit(sprite, (paddle.x, paddle.y))
+    if sprite is None:
+        pygame.draw.rect(screen, config.white, make_paddle_rect(paddle))
+    else:
+        screen.blit(sprite, (paddle.x, paddle.y))
 
 
 def render_ball(
     screen: pygame.Surface,
+    config: GameConfig,
     ball: Ball,
-    sprite: pygame.Surface,
+    sprite: pygame.Surface | None,
 ) -> None:
-    screen.blit(sprite, (ball.x, ball.y))
+    if sprite is None:
+        pygame.draw.ellipse(screen, config.white, make_ball_rect(ball))
+    else:
+        screen.blit(sprite, (ball.x, ball.y))
 
 
 def render_score(
@@ -86,13 +99,13 @@ def render_game(
     config: GameConfig,
     sprites: GameSprites,
 ) -> None:
-    render_background(screen, sprites)
+    render_background(screen, config, sprites)
     render_center_line(screen, config)
 
-    render_paddle(screen, state.player, sprites.paddle)
-    render_paddle(screen, state.opponent, sprites.paddle)
+    render_paddle(screen, config, state.player, sprites.paddle)
+    render_paddle(screen, config, state.opponent, sprites.paddle)
 
-    render_ball(screen, state.ball, sprites.ball)
+    render_ball(screen, config, state.ball, sprites.ball)
     render_score(screen, font, state, config)
 
     pygame.display.flip()
@@ -107,7 +120,7 @@ def render_game_over(
 ) -> None:
 
     # Background
-    render_background(screen, sprites)
+    render_background(screen, config, sprites)
 
     # Dark overlay
     overlay = pygame.Surface(

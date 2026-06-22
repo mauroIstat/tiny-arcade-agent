@@ -1,19 +1,9 @@
 """
-Sprite management for Pong.
+Sprite management for Breakout.
 
-This module contains the visual resources used by the game.
-
-Sprites are small images that represent game objects such as
-the player paddle, opponent paddle, ball, and background.
-
-The module is responsible for:
-- loading sprite images from disk;
-- scaling them to the configured size;
-- grouping them into a convenient container.
-- allowing the game to fall back to simple shapes when images are missing.
-
-In classic arcade games, most objects visible on screen are
-represented by sprites.
+If image files are present, the game uses them. If an image is missing, rendering
+falls back to simple geometric shapes so lessons can continue before the art is
+finished.
 """
 
 from dataclasses import dataclass
@@ -29,6 +19,7 @@ class GameSprites:
     background: pygame.Surface | None
     paddle: pygame.Surface | None
     ball: pygame.Surface | None
+    brick: pygame.Surface | None
 
 
 def load_sprite(path: Path, size: tuple[int, int], alpha: bool) -> pygame.Surface | None:
@@ -49,20 +40,26 @@ def load_sprites(config: GameConfig) -> GameSprites:
     sprites_dir = Path(__file__).resolve().parents[1] / "assets"
 
     background = load_sprite(
-        sprites_dir / "backgrounds" / "space_background.png",
+        sprites_dir / "backgrounds" / "breakout_background.png",
         (config.width, config.height),
         alpha=False,
     )
 
     paddle = load_sprite(
-        sprites_dir / "paddles" / "space_paddle.png",
+        sprites_dir / "paddles" / "breakout_paddle.png",
         (config.paddle_width, config.paddle_height),
         alpha=True,
     )
 
     ball = load_sprite(
-        sprites_dir / "balls" / "space_ball.png",
+        sprites_dir / "balls" / "breakout_ball.png",
         (config.ball_size, config.ball_size),
+        alpha=True,
+    )
+
+    brick = load_sprite(
+        sprites_dir / "bricks" / "breakout_brick.png",
+        (config.brick_width, config.brick_height),
         alpha=True,
     )
 
@@ -70,4 +67,5 @@ def load_sprites(config: GameConfig) -> GameSprites:
         background=background,
         paddle=paddle,
         ball=ball,
+        brick=brick,
     )
