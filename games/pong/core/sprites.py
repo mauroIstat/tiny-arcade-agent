@@ -1,3 +1,20 @@
+"""
+Sprite management for Pong.
+
+This module contains the visual resources used by the game.
+
+Sprites are small images that represent game objects such as
+the player paddle, opponent paddle, ball, and background.
+
+The module is responsible for:
+- loading sprite images from disk;
+- scaling them to the configured size;
+- grouping them into a convenient container.
+
+In classic arcade games, most objects visible on screen are
+represented by sprites.
+"""
+
 from dataclasses import dataclass
 from pathlib import Path
 

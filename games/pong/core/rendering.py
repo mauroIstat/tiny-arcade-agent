@@ -1,3 +1,21 @@
+"""
+Rendering utilities for Pong.
+
+This module is responsible for drawing the current game state
+on the screen.
+
+Rendering converts the internal simulation state into visual
+elements that the player can see, including:
+- the background;
+- paddles and ball;
+- score information;
+- game-over screens.
+
+The rendering system does not modify the game state.
+Its only purpose is to display a visual representation of
+the current match.
+"""
+
 import pygame
 
 from ..config import GameConfig
