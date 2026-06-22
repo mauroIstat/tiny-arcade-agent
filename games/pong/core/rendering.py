@@ -79,6 +79,7 @@ def render_game(
 
     pygame.display.flip()
 
+
 def render_game_over(
     screen: pygame.Surface,
     font: pygame.font.Font,

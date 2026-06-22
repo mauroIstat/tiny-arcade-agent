@@ -152,7 +152,7 @@ def wait_for_restart() -> bool:
 
 def run_game(
     opponent_policy: Policy,
-    title: str = "Tiny Pong Agents",
+    title: str = "Tiny Pong Game",
     config: GameConfig | None = None,
 ) -> None:
     

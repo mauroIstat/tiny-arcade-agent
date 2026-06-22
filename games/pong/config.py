@@ -48,7 +48,7 @@ class GameConfig:
     ball_speed_y_max: int = 220
 
     # Match
-    max_score: int = 10
+    max_score: int = 5
 
     @property
     def opponent_speed(self) -> float:
