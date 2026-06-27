@@ -56,11 +56,23 @@ def render_brick(
     if not brick.alive:
         return
 
+    colors = [
+        config.red,
+        config.orange,
+        config.yellow,
+        config.green,
+        config.blue,
+        config.purple,
+        config.cyan,
+    ]
+    color = colors[brick.row % len(colors)]
+
     if sprite is None:
-        colors = [config.orange, config.red, config.green, config.cyan]
-        pygame.draw.rect(screen, colors[brick.row % len(colors)], make_brick_rect(brick))
+        pygame.draw.rect(screen, color, make_brick_rect(brick))
     else:
-        screen.blit(sprite, (brick.x, brick.y))
+        tinted_sprite = sprite.copy()
+        tinted_sprite.fill(color, special_flags=pygame.BLEND_RGB_MULT)
+        screen.blit(tinted_sprite, (brick.x, brick.y))
 
 
 def render_hud(

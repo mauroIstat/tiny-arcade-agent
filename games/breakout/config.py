@@ -20,8 +20,11 @@ class GameConfig:
     white: tuple[int, int, int] = (255, 255, 255)
     cyan: tuple[int, int, int] = (0, 220, 255)
     orange: tuple[int, int, int] = (255, 150, 60)
+    yellow: tuple[int, int, int] = (255, 220, 60)
     red: tuple[int, int, int] = (255, 90, 90)
     green: tuple[int, int, int] = (100, 240, 140)
+    blue: tuple[int, int, int] = (80, 110, 255)
+    purple: tuple[int, int, int] = (170, 90, 255)
 
     # Paddle
     paddle_width: int = 100
